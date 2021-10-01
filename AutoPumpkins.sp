@@ -8,7 +8,7 @@ new Handle:v_RespawnTime = INVALID_HANDLE;
 
 new Float:g_fRespawnTime = 20.0;
 
-public Plugin:myinfo = 
+public Plugin:myinfo =
 {
 	name = "[TF2] Auto Pumpkins",
 	author = "DarthNinja",
@@ -47,11 +47,11 @@ public Action:SeedPumpkin(client, args)
 		PrintToChat(client, "[SM] Entity limit is reached. Can't spawn anymore pumpkins. Change maps.");
 		return Plugin_Handled;
 	}
-	
+
 	new iPumpkin = CreateEntityByName("tf_pumpkin_bomb");
-	
+
 	if(IsValidEntity(iPumpkin))
-	{		
+	{
 		PrintToChat(client, "\x04[\x03AP\x04]\x01 Pumpkin location added to database!")
 		new Float:pos[3];
 		GetClientAbsOrigin(client, pos);
@@ -63,10 +63,10 @@ public Action:SeedPumpkin(client, args)
 		decl String:mapname_esc[150];
 		GetCurrentMap(mapname, sizeof(mapname));
 		SQL_EscapeString(db, mapname, mapname_esc, sizeof(mapname_esc));
-		
+
 		decl String:server[50];
 		strcopy(server, sizeof(server), "Not Implemented");
-		
+
 		new len = 0;
 		decl String:buffer[2048];
 		len += Format(buffer[len], sizeof(buffer)-len, "INSERT INTO `TF2_AutoPumpkins` (`locX` ,`locY` ,`locZ` ,`map` ,`server`)");
@@ -117,7 +117,7 @@ public Connected(Handle:owner, Handle:hndl, const String:error[], any:data)
 	db = hndl;
 	SQL_CreateTables();
 }
-	
+
 SQL_CreateTables()
 {
 	new len = 0;
@@ -145,10 +145,10 @@ public SQLErrorCheckCallback(Handle:owner, Handle:hndl, const String:error[], an
 }
 
 public Action:EventRoundStart(Handle:event, const String:name[], bool:dontBroadcast)
-{	
+{
 	decl String:mapname[50];
 	GetCurrentMap(mapname, sizeof(mapname))
-	
+
 	new String:buffer[255]
 	Format(buffer, sizeof(buffer), "SELECT `locX`, `locY`, `locZ` FROM TF2_AutoPumpkins WHERE `map` = '%s' AND `enable` = '1';", mapname)
 	SQL_TQuery(db, SQL_SpawnPumpkins, buffer);
@@ -156,15 +156,15 @@ public Action:EventRoundStart(Handle:event, const String:name[], bool:dontBroadc
 }
 
 public SQL_SpawnPumpkins(Handle:owner, Handle:query, const String:error[], any:data)
-{	
+{
 	if (!StrEqual("", error))
 	{
 		LogError("SQL Error: %s", error);
 	}
-	else 
+	else
 	{
 		/* Process results here!*/
-	 
+
 		while (SQL_FetchRow(query))
 		{
 			new Float:pos[3];
@@ -176,10 +176,10 @@ public SQL_SpawnPumpkins(Handle:owner, Handle:query, const String:error[], any:d
 			angles[0] = 0.0;
 			angles[1] = GetRandomFloat(0.0, 360.0);
 			angles[2] = 0.0;
-			
+
 			new iPumpkin = CreateEntityByName("tf_pumpkin_bomb");
 			if(IsValidEntity(iPumpkin))
-			{		
+			{
 				DispatchSpawn(iPumpkin);
 				TeleportEntity(iPumpkin, pos, angles, NULL_VECTOR);
 				SDKHook(iPumpkin, SDKHook_OnTakeDamage, PumpkinTakeDamage);
@@ -221,18 +221,17 @@ public Action:RespawnPumpkin(Handle:timer, Handle:pack)
 	pos[0] = ReadPackFloat(pack);
 	pos[1] = ReadPackFloat(pack);
 	pos[2] = ReadPackFloat(pack);
-	
+
 	new Float:angles[3];
 	angles[0] = 0.0;
 	angles[1] = GetRandomFloat(0.0, 360.0);
 	angles[2] = 0.0;
-	
+
 	new iPumpkin = CreateEntityByName("tf_pumpkin_bomb");
 	if(IsValidEntity(iPumpkin))
-	{		
+	{
 		DispatchSpawn(iPumpkin);
 		TeleportEntity(iPumpkin, pos, angles, NULL_VECTOR);
 		SDKHook(iPumpkin, SDKHook_OnTakeDamage, PumpkinTakeDamage);
 	}
 }
-
