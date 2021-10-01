@@ -14,7 +14,7 @@ public Plugin:myinfo =
 	author = "DarthNinja",
 	description = "Auto-Spawns pumpkins at the start of the round, just like harvest!",
 	version = VERSION,
-	url = "DarthNinja.com"
+	url = "https://github.com/CyberdyneVulpine/SM-TF2-Auto-Pumpkins"
 }
 
 public OnPluginStart()
